@@ -23,6 +23,8 @@ namespace PDN1603Diag
             string relPath = Directory.GetCurrentDirectory();
             string searchPattern = "paint.net.*.install.*";
             string[] installFiles = Directory.GetFiles(relPath, searchPattern);
+            string desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory);
+            string msiPath = $@"\PaintDotNetMsi\PaintDotNet_x{(Environment.Is64BitOperatingSystem ? "64" : "86")}.msi";
 
             if (installFiles.Length <= 0)
             {
@@ -38,7 +40,15 @@ namespace PDN1603Diag
                     exePresent = true;
                     Console.WriteLine("Creating a MSI file to work with...");
                     Process.Start(file, "/CreateMsi /auto").WaitForExit();
-                    Console.WriteLine("Done.");
+                    if (File.Exists(desktopPath + msiPath))
+                    {
+                        Console.WriteLine("Done.");
+                    }
+                    else
+                    {
+                        noFile("MSI");
+                        return;
+                    }
                     Console.WriteLine(string.Empty);
                     break;
                 }
@@ -72,7 +82,15 @@ namespace PDN1603Diag
                         exePresent = true;
                         Console.WriteLine("Creating a MSI file to work with...");
                         Process.Start(file, "/CreateMsi /auto").WaitForExit();
-                        Console.WriteLine("Done.");
+                        if (File.Exists(desktopPath + msiPath))
+                        {
+                            Console.WriteLine("Done.");
+                        }
+                        else
+                        {
+                            noFile("MSI");
+                            return;
+                        }
                         Console.WriteLine(string.Empty);
                         if (File.Exists(file))
                         {
@@ -96,15 +114,13 @@ namespace PDN1603Diag
 
             }
 
-            string desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory);
-
             Console.WriteLine("Running the MSI with logging enabled...");
 
             Process process = new Process();
             ProcessStartInfo startInfo = new ProcessStartInfo();
             startInfo.FileName = "msiexec.exe";
             startInfo.WorkingDirectory = desktopPath;
-            startInfo.Arguments = string.Format(@"/i PaintDotNetMsi\PaintDotNet_x{0}.msi /L*V pdn.log", Environment.Is64BitOperatingSystem ? "64" : "86");
+            startInfo.Arguments = $"/i {msiPath} /L*V pdn.log";
             process.StartInfo = startInfo;
             process.Start();
             process.WaitForExit();
@@ -112,12 +128,12 @@ namespace PDN1603Diag
             Console.WriteLine("Done.");
             Console.WriteLine(string.Empty);
 
-            string msiPath = desktopPath + @"\PaintDotNetMsi";
-            if (Directory.Exists(msiPath))
+            string msiFolder = desktopPath + @"\PaintDotNetMsi";
+            if (Directory.Exists(msiFolder))
             {
                 try
                 {
-                    Directory.Delete(msiPath, true);
+                    Directory.Delete(msiFolder, true);
                 }
                 catch
                 {
