@@ -28,14 +28,14 @@ namespace PDN1603Diag
 
             if (installFiles.Length <= 0)
             {
-                noFile("installation");
+                NoFile("installation");
                 return;
             }
 
             bool exePresent = false;
             foreach (string file in installFiles)
             {
-                if (Path.GetExtension(file).ToLower() == ".exe")
+                if (Path.GetExtension(file).Equals(".exe", StringComparison.OrdinalIgnoreCase))
                 {
                     exePresent = true;
                     Console.WriteLine("Creating a MSI file to work with...");
@@ -46,7 +46,7 @@ namespace PDN1603Diag
                     }
                     else
                     {
-                        noFile("MSI");
+                        NoFile("MSI");
                         return;
                     }
                     Console.WriteLine(string.Empty);
@@ -59,7 +59,7 @@ namespace PDN1603Diag
                 bool zipPresent = false;
                 foreach (string file in installFiles)
                 {
-                    if (Path.GetExtension(file).ToLower() == ".zip")
+                    if (Path.GetExtension(file).Equals(".zip", StringComparison.OrdinalIgnoreCase))
                     {
                         zipPresent = true;
                         ZipFile.ExtractToDirectory(file, relPath);
@@ -69,7 +69,7 @@ namespace PDN1603Diag
 
                 if (!zipPresent)
                 {
-                    noFile("installation");
+                    NoFile("installation");
                     return;
                 }
 
@@ -77,7 +77,7 @@ namespace PDN1603Diag
 
                 foreach (string file in installFiles)
                 {
-                    if (Path.GetExtension(file).ToLower() == ".exe")
+                    if (Path.GetExtension(file).Equals(".exe", StringComparison.OrdinalIgnoreCase))
                     {
                         exePresent = true;
                         Console.WriteLine("Creating a MSI file to work with...");
@@ -88,7 +88,7 @@ namespace PDN1603Diag
                         }
                         else
                         {
-                            noFile("MSI");
+                            NoFile("MSI");
                             return;
                         }
                         Console.WriteLine(string.Empty);
@@ -108,7 +108,7 @@ namespace PDN1603Diag
 
                 if (!exePresent)
                 {
-                    noFile("installation");
+                    NoFile("installation");
                     return;
                 }
 
@@ -116,11 +116,11 @@ namespace PDN1603Diag
 
             Console.WriteLine("Running the MSI with logging enabled...");
 
-            Process process = new Process();
             ProcessStartInfo startInfo = new ProcessStartInfo();
             startInfo.FileName = "msiexec.exe";
             startInfo.WorkingDirectory = desktopPath;
             startInfo.Arguments = $"/i {msiPath} /L*V pdn.log";
+            Process process = new Process();
             process.StartInfo = startInfo;
             process.Start();
             process.WaitForExit();
@@ -143,7 +143,7 @@ namespace PDN1603Diag
             string logPath = desktopPath + @"\pdn.log";
             if (!File.Exists(logPath))
             {
-                noFile("log");
+                NoFile("log");
                 return;
             }
 
@@ -164,7 +164,7 @@ namespace PDN1603Diag
                     {
                         for (int beforeLine = line - 4; beforeLine < line; beforeLine++)
                         {
-                            lineOutput = string.Format("> Line {0}: {1}", beforeLine + 1, logText[beforeLine]);
+                            lineOutput = $"> Line {beforeLine + 1}: {logText[beforeLine]}";
                             errorLines.Add(lineOutput);
                             Console.WriteLine(lineOutput);
                         }
@@ -173,7 +173,7 @@ namespace PDN1603Diag
                     {
                     }
 
-                    lineOutput = string.Format("> Line {0}: {1}", line + 1, logText[line]);
+                    lineOutput = $"> Line {line + 1}: {logText[line]}";
                     errorLines.Add(lineOutput);
                     Console.ForegroundColor = ConsoleColor.Yellow;
                     Console.WriteLine(lineOutput);
@@ -183,7 +183,7 @@ namespace PDN1603Diag
                     {
                         for (int afterLine = line + 1; afterLine <= line + 4; afterLine++)
                         {
-                            lineOutput = string.Format("> Line {0}: {1}", afterLine + 1, logText[afterLine]);
+                            lineOutput = $"> Line {afterLine + 1}: {logText[afterLine]}";
                             errorLines.Add(lineOutput);
                             Console.WriteLine(lineOutput);
                         }
@@ -252,10 +252,10 @@ namespace PDN1603Diag
         }
 
 
-        static void noFile(string type)
+        static void NoFile(string type)
         {
             Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine(string.Format("The {0} file was not found!", type));
+            Console.WriteLine($"The {type} file was not found!");
             Console.ForegroundColor = ConsoleColor.White;
             Console.WriteLine(string.Empty);
             Console.WriteLine("Press any key to close.");
