@@ -241,14 +241,9 @@ namespace PDN1603Diag
 
             if (found1603)
             {
-                Console.WriteLine("Would you like to copy the relevant lines from above onto the clipboard? (Y/N)");
-                string copyPrompt = Console.ReadLine().ToUpper();
-                if (copyPrompt == "Y" || copyPrompt == "YES")
-                {
-                    Clipboard.SetText(string.Join("\r\n", errorLines.ToArray()));
-                    Console.WriteLine("The lines have been copied to the clipboard.");
-                    Console.WriteLine(string.Empty);
-                }
+                Clipboard.SetText(string.Join("\r\n", errorLines.ToArray()));
+                Console.WriteLine("The relevant lines from above have also been copied to the clipboard.");
+                Console.WriteLine(string.Empty);
             }
 
             Console.WriteLine(string.Empty);
